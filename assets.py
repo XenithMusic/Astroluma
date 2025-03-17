@@ -11,6 +11,7 @@ def parse_asset(file_path,key=""):
     # Placeholder logic: Just return the file path for now.
     if file_path.endswith(".ttf"):
         font = LoadFontEx(file_path.encode(),120,NULL,0)
+        SetTextureFilter(font.texture,TEXTURE_FILTER_TRILINEAR) # antialias the fonts! :3
         return font
     if file_path.endswith(".mp3"):
         if "music" in key:
