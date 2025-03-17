@@ -46,7 +46,10 @@ doInitFrame(sub=b"Loading configuration...")
 settings = conf.Config()
 settings.makeDefaults(
 	{
-		"volume":{
+		"graphics":{
+
+		},
+		"sfx_music":{
 			"master":0.25,
 			"music":1.0
 		},
@@ -133,6 +136,7 @@ class MainMenu(scenes.Scene):
 class Settings(scenes.Scene):
 	def __init__(self,name):
 		super().__init__(name)
+		self.subs = []
 	def Process(self,man):
 		menuMusic = a["astrolume:music.lastingPeace_extended_ambient"]
 		HandleMusic(menuMusic)
@@ -142,8 +146,19 @@ class Settings(scenes.Scene):
 		cursor = MOUSE_CURSOR_DEFAULT
 		ClearBackground(BLACK)
 		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],const.NAME.encode(),(20,10),60,10,WHITE) # text,x,y,size,color
-		DrawTextEx(a["astrolume:fonts.Prompt-Italic"],b"Settings",(20,70),20,0,WHITE) # text,x,y,size,color
+		if self.subs:
+			DrawTextEx(a["astrolume:fonts.Prompt-Italic"],(f"{locale.lang['gui.settings.' + self.subs[-1]]} Settings").encode(),(20,70),20,0,WHITE) # text,x,y,size,color
+		else:
+			DrawTextEx(a["astrolume:fonts.Prompt-Italic"],b"Settings",(20,70),20,0,WHITE) # text,x,y,size,color
 		DrawTextEx(a["astrolume:fonts.Prompt-Regular"],const.VERSION.encode(),(20,s_height-30),20,0,GRAY) # text,x,y,size,color
+
+		cursor = DrawButtonRectangle(15,150,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("videosettings",man),self.ButtonPress) or cursor
+		DrawRectangle(13,150,2,30,[255,255,255,255])
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.video"].encode(),(20,150),30,0,WHITE)
+
+		cursor = DrawButtonRectangle(15,181,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("audiosettings",man),self.ButtonPress) or cursor
+		DrawRectangle(13,181,2,30,[255,255,255,255])
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.audio"].encode(),(20,181),30,0,WHITE)
 
 		cursor = DrawButtonRectangle(15,274,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("back",man),self.ButtonPress) or cursor
 		DrawRectangle(13,274,2,30,[255,255,255,255])
@@ -156,7 +171,14 @@ class Settings(scenes.Scene):
 		man = ID[1]
 		ID = ID[0]
 		match ID:
+			case "videosettings":
+				self.subs += ["video"]
+			case "audiosettings":
+				self.subs += ["audio"]
 			case "back":
+				if self.subs != []:
+					self.subs.pop()
+					return
 				man.setScene(man.returnScene)
 			case _:
 				raise NotImplementedError("Unimplemented ID in MainMenu.ButtonPress")

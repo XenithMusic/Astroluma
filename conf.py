@@ -1,4 +1,4 @@
-import json
+import json,os
 
 def merge_defaults(defaults, table):
 	for key, value in defaults.items():
@@ -19,6 +19,7 @@ class Config:
 				self.config = json.load(f)
 		except FileNotFoundError as e:
 			self.config = {}
+			os.makedirs("/".join(self.path.split("/")[:-1]))
 	def save(self,path=None):
 		with open(path or self.path,"w") as f:
 			json.dump(self.config,f,indent=4)
