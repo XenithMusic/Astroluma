@@ -77,6 +77,25 @@ def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func):
 		r = MOUSE_CURSOR_POINTING_HAND
 	DrawRectangle(x,y,w,h,color)
 	return r
+def DrawSliderElement(x,y,w,h,min,max,bgcolor,bghovercolor,bgclickcolor,fgcolor,value=0,scalingfunc=lambda x : x,barWidth=4,text="Lorem Ipsum",displayfunc=lambda x : f"{int(x*100)}%",threshold=1):
+	mousePos = GetMousePosition()
+	cursor = None
+	if CheckCollisionPointRec(mousePos,[x,y,w,h]):
+		bgcolor = bghovercolor
+		cursor = MOUSE_CURSOR_POINTING_HAND
+		if IsMouseButtonDown(0):
+			color = bgclickcolor
+			normProgress = scalingfunc((mousePos.x-x)/w)
+			value = normProgress*(max-min)+min
+			print(value)
+			if value-min < threshold: value = min
+			if max-value < threshold: value = max
+	handleX = (value-min)/(max-min)*(w-barWidth)+x
+	DrawRectangle(x,y,w,h,bgcolor)
+	DrawRectangle(int(handleX),y,int(barWidth),h,fgcolor)
+	DrawTextEx(a["astrolume:fonts.Prompt-Light"],displayfunc(value).encode(),(x+5,y),h,0,WHITE)
+	DrawTextEx(a["astrolume:fonts.Prompt-Light"],text.encode(),(x+w+5,y),h,0,WHITE)
+	return cursor,value
 
 sceneman = scenes.SceneManager()
 class MainMenu(scenes.Scene):
@@ -148,17 +167,27 @@ class Settings(scenes.Scene):
 		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],const.NAME.encode(),(20,10),60,10,WHITE) # text,x,y,size,color
 		if self.subs:
 			DrawTextEx(a["astrolume:fonts.Prompt-Italic"],(f"{locale.lang['gui.settings.' + self.subs[-1]]} Settings").encode(),(20,70),20,0,WHITE) # text,x,y,size,color
+			match self.subs[-1]:
+				case "video":
+					pass
+				case "audio":
+					_cursor,settings.config["volume"]["master"] = DrawSliderElement(15,150,205,20,0,1,[255,255,255,20],[255,255,255,30],[255,255,255,20],[255,255,255,255],text="Master Volume",value=settings.config["volume"]["master"],threshold=0.03)
+					cursor = _cursor or cursor
+					_cursor,settings.config["volume"]["music"] = DrawSliderElement(15,171,205,20,0,1,[255,255,255,20],[255,255,255,30],[255,255,255,20],[255,255,255,255],text="Music Volume",value=settings.config["volume"]["music"],threshold=0.03)
+					cursor = _cursor or cursor
+				case _:
+					raise NotImplementedError(f"Settings.Render match self.subs[-1] case {self.subs[-1]}")
 		else:
 			DrawTextEx(a["astrolume:fonts.Prompt-Italic"],b"Settings",(20,70),20,0,WHITE) # text,x,y,size,color
-		DrawTextEx(a["astrolume:fonts.Prompt-Regular"],const.VERSION.encode(),(20,s_height-30),20,0,GRAY) # text,x,y,size,color
+			DrawTextEx(a["astrolume:fonts.Prompt-Regular"],const.VERSION.encode(),(20,s_height-30),20,0,GRAY) # text,x,y,size,color
 
-		cursor = DrawButtonRectangle(15,150,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("videosettings",man),self.ButtonPress) or cursor
-		DrawRectangle(13,150,2,30,[255,255,255,255])
-		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.video"].encode(),(20,150),30,0,WHITE)
+			cursor = DrawButtonRectangle(15,150,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("videosettings",man),self.ButtonPress) or cursor
+			DrawRectangle(13,150,2,30,[255,255,255,255])
+			DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.video"].encode(),(20,150),30,0,WHITE)
 
-		cursor = DrawButtonRectangle(15,181,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("audiosettings",man),self.ButtonPress) or cursor
-		DrawRectangle(13,181,2,30,[255,255,255,255])
-		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.audio"].encode(),(20,181),30,0,WHITE)
+			cursor = DrawButtonRectangle(15,181,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("audiosettings",man),self.ButtonPress) or cursor
+			DrawRectangle(13,181,2,30,[255,255,255,255])
+			DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.audio"].encode(),(20,181),30,0,WHITE)
 
 		cursor = DrawButtonRectangle(15,274,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("back",man),self.ButtonPress) or cursor
 		DrawRectangle(13,274,2,30,[255,255,255,255])
