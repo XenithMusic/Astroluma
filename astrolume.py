@@ -74,7 +74,10 @@ class MainMenu(scenes.Scene):
 		DrawTextEx(a["astrolume:fonts.Prompt-Regular"],const.VERSION.encode(),(20,s_height-30),20,0,GRAY) # text,x,y,size,color
 		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.menu.singleplayer"].encode(),(20,150),30,0,WHITE)
 		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.menu.multiplayer"].encode(),(20,180),30,0,WHITE)
-	def Event(self,man):
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.menu.settings"].encode(),(20,210),30,0,WHITE)
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.menu.credits"].encode(),(20,240),30,0,WHITE)
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.menu.exit"].encode(),(20,270),30,0,WHITE)
+	def Input(self,man):
 		pass
 sceneman.addScene("MAIN_MENU",MainMenu)
 sceneman.setScene("MAIN_MENU")
