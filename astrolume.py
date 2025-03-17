@@ -1,6 +1,9 @@
 # global libraries
 
-from raylib import *
+try:
+	from raylib import *
+except ModuleNotFoundError as e:
+	raise ImportError("Dependency not installed. Please run 'pip install raylib'.")
 from cffi import FFI
 ffi = FFI()
 import ctypes,time
@@ -119,14 +122,46 @@ class MainMenu(scenes.Scene):
 			case "multiplayer":
 				print(ID)
 			case "settings":
-				print(ID)
+				man.setScene("SETTINGS")
+				man.returnScene = "MAIN_MENU"
 			case "credits":
 				print(ID)
 			case "exit":
 				closeWindow = True
 			case _:
 				raise NotImplementedError("Unimplemented ID in MainMenu.ButtonPress")
+class Settings(scenes.Scene):
+	def __init__(self,name):
+		super().__init__(name)
+	def Process(self,man):
+		menuMusic = a["astrolume:music.lastingPeace_extended_ambient"]
+		HandleMusic(menuMusic)
+		if not IsMusicStreamPlaying(menuMusic):
+			PlayMusicStream(a["astrolume:music.lastingPeace_extended_ambient"])
+	def Render(self,man):
+		cursor = MOUSE_CURSOR_DEFAULT
+		ClearBackground(BLACK)
+		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],const.NAME.encode(),(20,10),60,10,WHITE) # text,x,y,size,color
+		DrawTextEx(a["astrolume:fonts.Prompt-Italic"],b"Settings",(20,70),20,0,WHITE) # text,x,y,size,color
+		DrawTextEx(a["astrolume:fonts.Prompt-Regular"],const.VERSION.encode(),(20,s_height-30),20,0,GRAY) # text,x,y,size,color
+
+		cursor = DrawButtonRectangle(15,274,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("back",man),self.ButtonPress) or cursor
+		DrawRectangle(13,274,2,30,[255,255,255,255])
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.back"].encode(),(20,274),30,0,WHITE)
+		SetMouseCursor(cursor)
+	def Input(self,man):
+		pass
+	def ButtonPress(self,ID):
+		global closeWindow
+		man = ID[1]
+		ID = ID[0]
+		match ID:
+			case "back":
+				man.setScene(man.returnScene)
+			case _:
+				raise NotImplementedError("Unimplemented ID in MainMenu.ButtonPress")
 sceneman.addScene("MAIN_MENU",MainMenu)
+sceneman.addScene("SETTINGS",Settings)
 sceneman.setScene("MAIN_MENU")
 
 closeWindow = False

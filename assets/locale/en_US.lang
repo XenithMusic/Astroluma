@@ -3,3 +3,4 @@ gui.menu.multiplayer Multiplayer
 gui.menu.settings Settings
 gui.menu.credits Credits
 gui.menu.exit Exit
+gui.settings.back Back
