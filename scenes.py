@@ -84,6 +84,7 @@ class SceneManager:
 		BeginDrawing()
 		ClearBackground(BLACK)
 		DrawTextureFlip(self.renderTextures[renderTextureId].texture,0,0,WHITE)
+		DrawFPS(10,10)
 		EndDrawing()
 	def Input(self):
 		if not self.active_scene: raise SceneError("No active scene!")

@@ -3,7 +3,13 @@ gui.menu.multiplayer Mehrspieler
 gui.menu.settings Einstellungen
 gui.menu.credits Gutschriften
 gui.menu.exit Beenden
+gui.menu.fire FEUER
 gui.settings.back Züruck
 gui.settings.video Video
 gui.settings.audio Audio
 gui.settings.language Sprache
+
+gui.credits.libraries Libraries
+gui.credits.developers Programmers
+gui.credits.music Musik
+gui.credits.fonts Fonts

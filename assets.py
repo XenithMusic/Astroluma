@@ -3,6 +3,14 @@ from raylib import *
 from cffi import FFI
 ffi = FFI()
 NULL = ffi.NULL
+fontCodepoints = ""
+def addCharacters(codepoints):
+    global fontCodepoints
+    fontCodepoints += codepoints
+def parseCodepoints():
+    global fontCodepoints,codepointCount
+    codepointCount = ffi.new("int *",0)
+    fontCodepoints = LoadCodepoints(fontCodepoints.encode(),codepointCount)
 def parse_asset(file_path,key=""):
     """
     This function parses an asset file and returns a useful object.
@@ -10,7 +18,7 @@ def parse_asset(file_path,key=""):
     """
     # Placeholder logic: Just return the file path for now.
     if file_path.endswith(".ttf"):
-        font = LoadFontEx(file_path.encode(),120,NULL,0)
+        font = LoadFontEx(file_path.encode(),120,fontCodepoints,int(codepointCount[0]))
         SetTextureFilter(font.texture,TEXTURE_FILTER_TRILINEAR) # antialias the fonts! :3
         return font
     if file_path.endswith(".mp3"):

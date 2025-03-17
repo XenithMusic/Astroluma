@@ -6,7 +6,7 @@ except ModuleNotFoundError as e:
 	raise ImportError("Dependency not installed. Please run 'pip install raylib'.")
 from cffi import FFI
 ffi = FFI()
-import ctypes,time
+import ctypes,time,random
 
 # local libraries
 
@@ -19,8 +19,10 @@ import localization as locale
 SetConfigFlags(FLAG_MSAA_4X_HINT)
 
 InitWindow(600,400,const.NAME.encode() + b" - " + const.SPLASH.encode())
-SetTargetFPS(60)
 InitAudioDevice()
+SetAudioStreamBufferSizeDefault(4096);
+SetExitKey(0)
+SetTargetFPS(60)
 def doInitFrame(step=b"Initializing",sub=b"",subsub=b""):
 	BeginDrawing()
 	ClearBackground(BLACK)
@@ -38,6 +40,10 @@ false = False
 
 # load assets
 doInitFrame(sub=b"Loading assets...")
+assets.addCharacters("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()`~-_=+[{]}\\|;:'\",<.>/? ") # English
+assets.addCharacters("äöüÄÖÜẞß") # German
+assets.addCharacters("·") # Symbols
+assets.parseCodepoints()
 a = assets.collect_assets("assets")
 print(a)
 
@@ -63,8 +69,8 @@ locale.loadLanguage(a)
 
 # extra variables
 def HandleMusic(music):
-	UpdateMusicStream(music)
 	SetMusicVolume(music,settings.config["volume"]["master"]*settings.config["volume"]["music"])
+	UpdateMusicStream(music)
 
 def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func,text=""):
 	r = None
@@ -102,15 +108,18 @@ sceneman = scenes.SceneManager()
 class MainMenu(scenes.Scene):
 	def __init__(self,name):
 		super().__init__(name)
+		self.menuMusic = a["astrolume:music.lastingPeace_extended_ambient"]
 	def Process(self,man):
-		menuMusic = a["astrolume:music.lastingPeace_extended_ambient"]
-		HandleMusic(menuMusic)
-		if not IsMusicStreamPlaying(menuMusic):
+		HandleMusic(self.menuMusic)
+		if not IsMusicStreamPlaying(self.menuMusic):
 			PlayMusicStream(a["astrolume:music.lastingPeace_extended_ambient"])
 	def Render(self,man):
 		cursor = MOUSE_CURSOR_DEFAULT
 		ClearBackground(BLACK)
-		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],const.NAME.encode(),(20,10),60,10,WHITE) # text,x,y,size,color
+		if random.randint(1,10000) == 1:
+			DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],locale.lang["gui.menu.fire"].encode(),(20,10),60,10,WHITE) # text,x,y,size,color
+		else:
+			DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],const.NAME.encode(),(20,10),60,10,WHITE) # text,x,y,size,color
 		DrawTextEx(a["astrolume:fonts.Prompt-Regular"],const.VERSION.encode(),(20,s_height-30),20,0,GRAY) # text,x,y,size,color
 
 		cursor = DrawButtonRectangle(15,150,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("singleplayer",man),self.ButtonPress) or cursor
@@ -148,7 +157,7 @@ class MainMenu(scenes.Scene):
 				man.setScene("SETTINGS")
 				man.returnScene = "MAIN_MENU"
 			case "credits":
-				print(ID)
+				man.setScene("CREDITS")
 			case "exit":
 				closeWindow = True
 			case _:
@@ -229,8 +238,48 @@ class Settings(scenes.Scene):
 				man.setScene(man.returnScene)
 			case _:
 				raise NotImplementedError("Unimplemented ID in Settings.ButtonPress")
+class Credits(scenes.Scene):
+	def __init__(self,name):
+		super().__init__(name)
+		self.subs = []
+		self.position = 0
+	def Process(self,man):
+		self.position -= 1
+	def Render(self,man):
+		cursor = MOUSE_CURSOR_DEFAULT
+		ClearBackground(BLACK)
+		y = GetScreenHeight()
+		y+=30;DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],locale.lang["gui.credits.libraries"].encode(),(20,y+self.position),60,0,WHITE);y+=60
+		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],b"pyray: electronstudio",(20,y+self.position),30,0,WHITE);y+=30 # text,x,y,size,color
+		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],b"    (raylib: raysan5)",(20,y+self.position),30,0,WHITE);y+=30 # text,x,y,size,color
+		y+=30;DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],locale.lang["gui.credits.developers"].encode(),(20,y+self.position),60,0,WHITE);y+=60
+		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],b"cookiiq",(20,y+self.position),30,0,WHITE);y+=30 # text,x,y,size,color
+
+		y+=30;DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],locale.lang["gui.credits.music"].encode(),(20,y+self.position),60,0,WHITE);y+=60 # text,x,y,size,color
+		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],b"JessanneS - Extended Peace (menu music)",(20,y+self.position),30,0,WHITE);y+=30 # text,x,y,size,color
+
+		y+=30;DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],locale.lang["gui.credits.fonts"].encode(),(20,y+self.position),60,0,WHITE);y+=60 # text,x,y,size,color
+		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],b"Prompt (Licensed under the Open Font License)",(20,y+self.position),30,0,WHITE);y+=30 # text,x,y,size,color
+		SetMouseCursor(cursor)
+	def Input(self,man):
+		if (IsKeyReleased(KEY_ESCAPE)):
+			man.setScene("MAIN_MENU")
+	def ButtonPress(self,ID):
+		global closeWindow
+		man = ID[1]
+		ID = ID[0]
+		print(ID)
+		if ID.startswith("setLang_"):
+			locale.language = ID.replace("setLang_","")
+			settings.config["language"] = locale.language
+			locale.loadLanguage(a)
+			ID = "ignore"
+		match ID:
+			case _:
+				raise NotImplementedError("Unimplemented ID in Settings.ButtonPress")
 sceneman.addScene("MAIN_MENU",MainMenu)
 sceneman.addScene("SETTINGS",Settings)
+sceneman.addScene("CREDITS",Credits)
 sceneman.setScene("MAIN_MENU")
 
 closeWindow = False
@@ -239,6 +288,7 @@ while not (WindowShouldClose() or closeWindow):
 	s_width,s_height = (GetScreenWidth(),GetScreenHeight())
 	sceneman.PrepShader(s_width,s_height)
 	sceneman.Render()
+	sceneman.Input()
 	sceneman.Process()
 
 assets.destroy_assets(a)
