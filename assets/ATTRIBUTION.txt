@@ -1,0 +1,8 @@
+music.lastingPeace_extended_ambient
+	Music by JessanneS on soundcloud (https://www.soundcloud.com/jessannes).
+	This track may or may not be complete or present there, and will likely be
+		updated at a later date with a new / higher quality version.
+
+fonts.Prompt-*
+	All fonts are from google fonts (fonts.google.com)
+	See fonts.OFL for license.
