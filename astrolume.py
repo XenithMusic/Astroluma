@@ -1,8 +1,15 @@
+# global libraries
+
 from raylib import *
 from cffi import FFI
 ffi = FFI()
-import const,ctypes,time,assets,conf,utils,scenes
+import ctypes,time
+
+# local libraries
+
 from enums import *
+import const,assets,conf,utils,scenes
+import localization as locale
 
 # initialize
 
@@ -39,8 +46,14 @@ settings.makeDefaults(
 		"volume":{
 			"master":0.25,
 			"music":1.0
-		}
+		},
+		"language":locale.language
 	})
+
+# load localization
+doInitFrame(sub=b"Loading assets...",subsub=b"(localization)")
+locale.language = settings.config["language"]
+locale.loadLanguage(a)
 
 # extra variables
 def HandleMusic(music):
@@ -59,11 +72,11 @@ class MainMenu(scenes.Scene):
 	def Render(self,man):
 		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],const.NAME.encode(),(20,10),60,10,WHITE) # text,x,y,size,color
 		DrawTextEx(a["astrolume:fonts.Prompt-Regular"],const.VERSION.encode(),(20,s_height-30),20,0,GRAY) # text,x,y,size,color
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.menu.singleplayer"].encode(),(20,150),30,0,WHITE)
 	def Event(self,man):
 		pass
 sceneman.addScene("MAIN_MENU",MainMenu)
 sceneman.setScene("MAIN_MENU")
-sceneman.addShader("FXAA",a["astrolume:shaders.fxaa_frag"])
 
 while not WindowShouldClose():
 	s_width,s_height = (GetScreenWidth(),GetScreenHeight())
@@ -73,3 +86,5 @@ while not WindowShouldClose():
 
 assets.destroy_assets(a)
 CloseWindow()
+
+settings.save()

@@ -12,15 +12,15 @@ def merge_defaults(defaults, table):
 
 class Config:
 	"""An object making saving to a configuration unnecessarily simple."""
-	def __init__(self,path="data/config.json"):
+	def __init__(self,path="data/settings.json"):
 		self.path = path
 		try:
 			with open(self.path,"r") as f:
 				self.config = json.load(f)
 		except FileNotFoundError as e:
 			self.config = {}
-	def save(self):
-		with open(self.path,"w") as f:
+	def save(self,path=None):
+		with open(path or self.path,"w") as f:
 			json.dump(self.config,f,indent=4)
 	def reload(self):
 		with open(self.path,"r") as f:

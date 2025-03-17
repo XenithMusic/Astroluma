@@ -25,7 +25,8 @@ def parse_asset(file_path,key=""):
         shader = LoadShader(file_path.encode(),NULL)
         return shader
 
-    return None
+    with open(file_path,"r") as f:
+        return f.read()
 
 def collect_assets(folder_path, namespace=None, parent_key=""):
     """

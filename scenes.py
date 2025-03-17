@@ -37,9 +37,11 @@ class SceneManager:
 		if GetScreenWidth() != self.screen_width or GetScreenHeight() != self.screen_height or len(self.renderTextures) == 0:
 			self.screen_width = GetScreenWidth()
 			self.screen_height = GetScreenHeight()
+			texelSize = ffi.new("float[2]", [1.0/self.screen_width, 1.0/self.screen_height])
 			resolution = ffi.new("float[2]", [self.screen_width, self.screen_height])
 			for i in self.shaders.values():
 				SetShaderValue(i, GetShaderLocation(i, b"resolution"), resolution, SHADER_UNIFORM_VEC2)
+				SetShaderValue(i, GetShaderLocation(i, b"texelSize"), texelSize, SHADER_UNIFORM_VEC2)
 			for i in self.renderTextures:
 				UnloadRenderTexture(i)
 			self.renderTextures = [
