@@ -55,7 +55,7 @@ def collect_assets(folder_path, namespace=None, parent_key=""):
             assets.update(collect_assets(item_path, namespace, new_key))
         else:
             # If it's a file, parse the asset and add to the dictionary
-            key = f"{namespace}:{parent_key}.{".".join(item.split(".")[:-1])}" if parent_key else item
+            key = f"{namespace}:{parent_key}.{'.'.join(item.split('.')[:-1])}" if parent_key else item
             assets[key] = parse_asset(item_path,key)
 
     return assets
