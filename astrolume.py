@@ -124,6 +124,8 @@ class MainMenu(scenes.Scene):
 				print(ID)
 			case "exit":
 				closeWindow = True
+			case _:
+				raise NotImplementedError("Unimplemented ID in MainMenu.ButtonPress")
 sceneman.addScene("MAIN_MENU",MainMenu)
 sceneman.setScene("MAIN_MENU")
 
