@@ -1,2 +1,2 @@
-# ASTROLUME
-A 2D space game.
+# ASTROLUMA
+*Exploring space to save your home.*
