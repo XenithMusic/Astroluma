@@ -4,3 +4,6 @@ gui.menu.settings Einstellungen
 gui.menu.credits Gutschriften
 gui.menu.exit Beenden
 gui.settings.back Züruck
+gui.settings.video Video
+gui.settings.audio Audio
+gui.settings.language Sprache

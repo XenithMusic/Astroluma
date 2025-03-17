@@ -6,3 +6,4 @@ gui.menu.exit Exit
 gui.settings.back Back
 gui.settings.video Video
 gui.settings.audio Audio
+gui.settings.language Language

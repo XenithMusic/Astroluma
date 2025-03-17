@@ -49,7 +49,7 @@ settings.makeDefaults(
 		"graphics":{
 
 		},
-		"sfx_music":{
+		"volume":{
 			"master":0.25,
 			"music":1.0
 		},
@@ -66,7 +66,7 @@ def HandleMusic(music):
 	UpdateMusicStream(music)
 	SetMusicVolume(music,settings.config["volume"]["master"]*settings.config["volume"]["music"])
 
-def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func):
+def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func,text=""):
 	r = None
 	if CheckCollisionPointRec(GetMousePosition(),[x,y,w,h]):
 		color = hovercolor
@@ -76,6 +76,7 @@ def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func):
 			func(ID)
 		r = MOUSE_CURSOR_POINTING_HAND
 	DrawRectangle(x,y,w,h,color)
+	if text != "": DrawTextEx(a["astrolume:fonts.Prompt-Light"],text.encode(),(x+5,y),h,0,WHITE)
 	return r
 def DrawSliderElement(x,y,w,h,min,max,bgcolor,bghovercolor,bgclickcolor,fgcolor,value=0,scalingfunc=lambda x : x,barWidth=4,text="Lorem Ipsum",displayfunc=lambda x : f"{int(x*100)}%",threshold=1):
 	mousePos = GetMousePosition()
@@ -168,6 +169,8 @@ class Settings(scenes.Scene):
 		if self.subs:
 			DrawTextEx(a["astrolume:fonts.Prompt-Italic"],(f"{locale.lang['gui.settings.' + self.subs[-1]]} Settings").encode(),(20,70),20,0,WHITE) # text,x,y,size,color
 			match self.subs[-1]:
+				case "language":
+					_cursor = DrawButtonRectangle(15,150,205,20,[255,255,255,20],[255,255,255,35],[255,255,255,50],"setLang_en_US",self.ButtonPress,text="English (US)")
 				case "video":
 					pass
 				case "audio":
@@ -189,6 +192,10 @@ class Settings(scenes.Scene):
 			DrawRectangle(13,181,2,30,[255,255,255,255])
 			DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.audio"].encode(),(20,181),30,0,WHITE)
 
+			cursor = DrawButtonRectangle(15,212,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("languagesettings",man),self.ButtonPress) or cursor
+			DrawRectangle(13,212,2,30,[255,255,255,255])
+			DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.language"].encode(),(20,212),30,0,WHITE)
+
 		cursor = DrawButtonRectangle(15,274,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("back",man),self.ButtonPress) or cursor
 		DrawRectangle(13,274,2,30,[255,255,255,255])
 		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.back"].encode(),(20,274),30,0,WHITE)
@@ -199,11 +206,19 @@ class Settings(scenes.Scene):
 		global closeWindow
 		man = ID[1]
 		ID = ID[0]
+		if ID.startswith("setLang_"):
+			locale.language = ID.replace("setLang_","")
+			locale.loadLanguage(a)
+			ID = "ignore"
 		match ID:
+			case "ignore":
+				pass
 			case "videosettings":
 				self.subs += ["video"]
 			case "audiosettings":
 				self.subs += ["audio"]
+			case "languagesettings":
+				self.subs += ["language"]
 			case "back":
 				if self.subs != []:
 					self.subs.pop()
