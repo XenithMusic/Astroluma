@@ -21,7 +21,7 @@ class Scene:
 		raise NotImplementedError(f"({self.name}) Scene.Process")
 	def Render(self,man):
 		raise NotImplementedError(f"({self.name}) Scene.Render")
-	def Event(self,man):
+	def Input(self,man):
 		raise NotImplementedError(f"({self.name}) Scene.Event")
 
 class SceneManager:
@@ -85,6 +85,6 @@ class SceneManager:
 		ClearBackground(BLACK)
 		DrawTextureFlip(self.renderTextures[renderTextureId].texture,0,0,WHITE)
 		EndDrawing()
-	def Event(self):
+	def Input(self):
 		if not self.active_scene: raise SceneError("No active scene!")
-		return self.active_scene.Event(self)
+		return self.active_scene.Input(self)
