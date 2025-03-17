@@ -170,7 +170,8 @@ class Settings(scenes.Scene):
 			DrawTextEx(a["astrolume:fonts.Prompt-Italic"],(f"{locale.lang['gui.settings.' + self.subs[-1]]} Settings").encode(),(20,70),20,0,WHITE) # text,x,y,size,color
 			match self.subs[-1]:
 				case "language":
-					_cursor = DrawButtonRectangle(15,150,205,20,[255,255,255,20],[255,255,255,35],[255,255,255,50],"setLang_en_US",self.ButtonPress,text="English (US)")
+					cursor = DrawButtonRectangle(15,150,205,20,[255,255,255,20],[255,255,255,35],[255,255,255,50],("setLang_en_US",man),self.ButtonPress,text="English (US)") or cursor
+					cursor = DrawButtonRectangle(15,171,205,20,[255,255,255,20],[255,255,255,35],[255,255,255,50],("setLang_de_DE",man),self.ButtonPress,text="Deutsch (Deutschland)") or cursor
 				case "video":
 					pass
 				case "audio":
@@ -206,8 +207,10 @@ class Settings(scenes.Scene):
 		global closeWindow
 		man = ID[1]
 		ID = ID[0]
+		print(ID)
 		if ID.startswith("setLang_"):
 			locale.language = ID.replace("setLang_","")
+			settings.config["language"] = locale.language
 			locale.loadLanguage(a)
 			ID = "ignore"
 		match ID:
@@ -225,7 +228,7 @@ class Settings(scenes.Scene):
 					return
 				man.setScene(man.returnScene)
 			case _:
-				raise NotImplementedError("Unimplemented ID in MainMenu.ButtonPress")
+				raise NotImplementedError("Unimplemented ID in Settings.ButtonPress")
 sceneman.addScene("MAIN_MENU",MainMenu)
 sceneman.addScene("SETTINGS",Settings)
 sceneman.setScene("MAIN_MENU")

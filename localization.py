@@ -6,3 +6,8 @@ def loadLanguage(a):
 	lang = a[f"astrolume:locale.{language}"].split("\n")
 	lang = {x[0]:" ".join(x[1:]) for x in [x.split(" ") for x in lang]}
 language = locale.getdefaultlocale()[0]
+
+languageNames = {
+	"english":"English",
+	"german":"Deutsch"
+}
