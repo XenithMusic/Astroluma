@@ -77,13 +77,13 @@ class SceneManager:
 			BeginTextureMode(self.renderTextures[renderTextureId])
 			BeginShaderMode(v)
 
-			DrawTexture(self.renderTextures[utils.wrap(renderTextureId-1,0,3)].texture,0,0,WHITE)
+			DrawTextureFlip(self.renderTextures[utils.wrap(renderTextureId-1,0,3)].texture,0,0,WHITE)
 
 			EndShaderMode()
 			EndTextureMode()
 		BeginDrawing()
 		ClearBackground(BLACK)
-		DrawTexture(self.renderTextures[renderTextureId].texture,0,0,WHITE)
+		DrawTextureFlip(self.renderTextures[renderTextureId].texture,0,0,WHITE)
 		EndDrawing()
 	def Event(self):
 		if not self.active_scene: raise SceneError("No active scene!")
