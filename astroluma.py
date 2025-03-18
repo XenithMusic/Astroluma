@@ -6,12 +6,12 @@ except ModuleNotFoundError as e:
 	raise ImportError("Dependency not installed. Please run 'pip install raylib'.")
 from cffi import FFI
 ffi = FFI()
-import ctypes,time,random
+import ctypes,time,random,os
 
 # local libraries
 
 from enums import *
-import const,assets,conf,utils,scenes
+import const,assets,conf,utils,scenes,levels
 import localization as locale
 
 # initialize
@@ -72,7 +72,7 @@ def HandleMusic(music):
 	SetMusicVolume(music,settings.config["volume"]["master"]*settings.config["volume"]["music"])
 	UpdateMusicStream(music)
 
-def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func,text=""):
+def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func,text="",rect=False,rectColor=None):
 	r = None
 	if CheckCollisionPointRec(GetMousePosition(),[x,y,w,h]):
 		color = hovercolor
@@ -82,6 +82,7 @@ def DrawButtonRectangle(x,y,w,h,color,hovercolor,clickcolor,ID,func,text=""):
 			func(ID)
 		r = MOUSE_CURSOR_POINTING_HAND
 	DrawRectangle(x,y,w,h,color)
+	if rect: DrawRectangle(x-2,y,2,h,rectColor)
 	if text != "": DrawTextEx(a["astrolume:fonts.Prompt-Light"],text.encode(),(x+5,y),h,0,WHITE)
 	return r
 def DrawSliderElement(x,y,w,h,min,max,bgcolor,bghovercolor,bgclickcolor,fgcolor,value=0,scalingfunc=lambda x : x,barWidth=4,text="Lorem Ipsum",displayfunc=lambda x : f"{int(x*100)}%",threshold=1):
@@ -150,13 +151,15 @@ class MainMenu(scenes.Scene):
 		ID = ID[0]
 		match ID:
 			case "singleplayer":
-				print("singleplayer")
+				man.setScene("GAME_LIST")
+				man.returnScene = "MAIN_MENU"
 			case "multiplayer":
 				print(ID)
 			case "settings":
 				man.setScene("SETTINGS")
 				man.returnScene = "MAIN_MENU"
 			case "credits":
+				StopMusicStream(self.menuMusic)
 				man.setScene("CREDITS")
 			case "exit":
 				closeWindow = True
@@ -277,7 +280,66 @@ class Credits(scenes.Scene):
 		match ID:
 			case _:
 				raise NotImplementedError("Unimplemented ID in Settings.ButtonPress")
+class Game_Select(scenes.Scene):
+	def __init__(self,name):
+		super().__init__(name)
+		self.subs = []
+		self.scroll = 0
+		self.items = []
+		self.size = max(1,(s_height-70-45-10-10)/(len(self.items)*80 or 1))
+		self.LoadLevels()
+	def Process(self,man):
+		menuMusic = a["astrolume:music.lastingPeace_extended_ambient"]
+		HandleMusic(menuMusic)
+		if not IsMusicStreamPlaying(menuMusic):
+			PlayMusicStream(a["astrolume:music.lastingPeace_extended_ambient"])
+	def LoadLevels(self):
+		for i in os.listdir("data/levels"):
+			print(levels.Level(f"data/levels/{i}"))
+		self.size = max(1,(s_height-70-45-10-10)/(len(self.items)*80 or 1))
+	def Render(self,man):
+		cursor = MOUSE_CURSOR_DEFAULT
+		ClearBackground(BLACK)
+		DrawTextEx(a["astrolume:fonts.Prompt-ExtraLightItalic"],const.NAME.encode(),(20,10),60,10,WHITE) # text,x,y,size,color
+		BeginScissorMode(15,70,s_width-15-15,s_height-70-45-10-10)
+
+		DrawRectangle(15,70,s_width-15-15,s_height-70-45-10-10,[255,255,255,5])
+		DrawRectangle(s_width-15-2,70+self.scroll,2,50,[255,255,255,255])
+		
+		EndScissorMode()
+		cursor = DrawButtonRectangle(15,s_height-45,205,30,[255,255,255,5],[255,255,255,20],[255,255,255,50],("back",man),self.ButtonPress,rect=True,rectColor=[255,255,255,255]) or cursor
+		DrawTextEx(a["astrolume:fonts.Prompt-Light"],locale.lang["gui.settings.back"].encode(),(20,s_height-45),30,0,WHITE)
+		SetMouseCursor(cursor)
+	def Input(self,man):
+		pass
+	def ButtonPress(self,ID):
+		global closeWindow
+		man = ID[1]
+		ID = ID[0]
+		print(ID)
+		if ID.startswith("setLang_"):
+			locale.language = ID.replace("setLang_","")
+			settings.config["language"] = locale.language
+			locale.loadLanguage(a)
+			ID = "ignore"
+		match ID:
+			case "ignore":
+				pass
+			case "videosettings":
+				self.subs += ["video"]
+			case "audiosettings":
+				self.subs += ["audio"]
+			case "languagesettings":
+				self.subs += ["language"]
+			case "back":
+				if self.subs != []:
+					self.subs.pop()
+					return
+				man.setScene(man.returnScene)
+			case _:
+				raise NotImplementedError("Unimplemented ID in Settings.ButtonPress")
 sceneman.addScene("MAIN_MENU",MainMenu)
+sceneman.addScene("GAME_LIST",Game_Select)
 sceneman.addScene("SETTINGS",Settings)
 sceneman.addScene("CREDITS",Credits)
 sceneman.setScene("MAIN_MENU")
