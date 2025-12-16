@@ -1,0 +1,18 @@
+{
+    "version":1,
+    "gridsize":[16,16],
+    "ascender":3, // how many pixels from the bottom does the average lowercase letter start
+    "charmap":[
+        "AaBbCcDdEeFfGgHh",
+        "IiJjKkLlMmNnOoPp",
+        "QqRrSsTtUuVvWwXx",
+        "YyZz!?.,'\":;#$/%",
+        "&()*+-0123456789",
+        "<=>@[\\]^_`{|}~™ß",
+        "ẞÄÅØÖÜäåøöü°₤€¥¢",
+        "©®¿¡ÃÂÀÁÆÇÈÉÊËÌÍ",
+        "ÎÏÐÑÒÓÔÕÙÚÛÝÞþãà",
+        "áâæçèéêëìíîïðñòó",
+        "ôõùúûýÿŸŒœŠšŽž �"
+    ]
+}
