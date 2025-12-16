@@ -1,2 +1,7 @@
+> [!CAUTION]
+> THIS BRANCH IS NOLONGER ACTIVE. PLEASE USE THE `rewrite` BRANCH.
+>
+> NO NEW CHANGES WILL BE COMMITTED HERE.
+
 # ASTROLUMA
 *Exploring space to save your home.*
