@@ -121,3 +121,7 @@ class Button(CollectionNode):
                 ])
         ]
         super().__init__(x,y,children)
+    def hovered(self):
+        return ray.check_collision_point_rec(ray.get_mouse_position(),(self.x,self.y,self.w,self.h))
+    def clicked(self):
+        return self.hovered() and ray.is_mouse_button_released(ray.MouseButton.MOUSE_BUTTON_LEFT)

@@ -19,9 +19,9 @@ ray.set_target_fps(60)
 Init : Instances
 """
 
-mgr = scene.SceneManager()
 cfg = settings.Settings()
 ass = assets.Assets()
+mgr = scene.SceneManager(ass,cfg)
 
 """
 Init : Modding
@@ -67,6 +67,7 @@ class Menu(nodes.Scene):
         self.modct = nodes.Text(5,self.h-5-10,text=f"gui.generic.unloaded",size=10,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
         self.rpct = nodes.Text(5,self.h-5,text=f"gui.generic.unloaded",size=10,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
     def _render(self,assets,settings,sceneManager):
+        global close
         super()._render(assets,settings,sceneManager)
         self.copyright.x = self.w-5
         self.copyright.y = self.h-5
@@ -79,6 +80,8 @@ class Menu(nodes.Scene):
         self.rpct.text = f"'{RESOURCE_COUNT} resource packs"
         self.children = [self.title,self.singlePlayer,self.multiPlayer,self.settings,self.exit,self.copyright,self.modded,self.modct,self.rpct]
         self.font.drawStr("Hello, World!",15,15,(0,0,0,255),scale=3)
+        if self.exit.clicked():
+            sceneManager.shutdown()
 
 class Sky(nodes.Scene):
     def __init__(self):
@@ -110,15 +113,29 @@ mgr.declareScene("sky",Sky)
 mgr.activateScene("menu",0)
 mgr.activateScene("sky",-9999)
 
+def _shutdown(assets,settings,sceneManager):
+    print("Shutting down!")
+
+mgr.setCallback("shutdown",_shutdown)
+
 """
 Main
 """
 
-while not ray.window_should_close():
-    mgr.render(ass,cfg)
+close = False
+while not mgr.should_close:
+    mgr.render()
+    if ray.window_should_close():
+        mgr.shutdown()
 
 """
 Shutdown : Garbage
 """
 
 ray.close_window()
+
+"""
+Shutdown : Terminate
+"""
+
+exit(mgr.close_exit_code)
