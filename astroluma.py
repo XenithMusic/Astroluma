@@ -8,20 +8,20 @@ import time
 import math
 
 """
-Init : Instances
-"""
-
-mgr = scene.SceneManager()
-cfg = settings.Settings()
-ass = assets.Assets()
-
-"""
 Init : Raylib
 """
 
 ray.set_config_flags(ray.ConfigFlags.FLAG_MSAA_4X_HINT | ray.ConfigFlags.FLAG_WINDOW_RESIZABLE)
 ray.init_window(600,400,"Astroluma")
 ray.set_target_fps(60)
+
+"""
+Init : Instances
+"""
+
+mgr = scene.SceneManager()
+cfg = settings.Settings()
+ass = assets.Assets()
 
 """
 Init : Modding
@@ -40,6 +40,9 @@ gameTime = 0
 class Menu(nodes.Scene):
     def __init__(self):
         super().__init__()
+
+        self.font = ass.fonts["default"]
+
         self.title = nodes.Text(50,50,"'Astroluma",40,ray.WHITE,outlineColor=ray.BLACK)
         
         self.singlePlayer = nodes.Button(50,150,250,180,text="gui.menu.singleplayer",hAlign="center",textOffset=(0,0),buttonColor=ray.Color(255,255,255,50),fontColor=ray.WHITE,outlineColor=ray.BLACK,borderColor=None)
@@ -75,6 +78,7 @@ class Menu(nodes.Scene):
         self.modct.text = f"'{MOD_COUNT} mods"
         self.rpct.text = f"'{RESOURCE_COUNT} resource packs"
         self.children = [self.title,self.singlePlayer,self.multiPlayer,self.settings,self.exit,self.copyright,self.modded,self.modct,self.rpct]
+        self.font.drawStr("Hello, World!",15,15,(0,0,0,255),scale=3)
 
 class Sky(nodes.Scene):
     def __init__(self):
