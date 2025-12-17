@@ -1,6 +1,7 @@
-import os,jsonc
+import os,jsonc,const
 from typing import Any
 import pyray as ray
+import PIL.Image
 
 loadedNamespaces = {"astroluma":"assets/"}
 
@@ -35,6 +36,7 @@ class ShaderContent:
 
 class Font:
     def __init__(self,sourceFile):
+        self.headerPixels = 1 # how many pixels that are not counted in the "gridsize", which is only for rendered size.
         print(sourceFile)
         pngf = sourceFile
         jsonf = pngf.replace(".png",".jsonc")
@@ -42,11 +44,26 @@ class Font:
         self.png = ray.load_texture(pngf)
         with open(jsonf,"r") as f:
             self.json:dict = jsonc.loads(f.read())
-        self.map = self.json["charmap"]
         self.version = self.json["version"]
+
+        if self.version != const.CURRENT_VERSION["FONT"]:
+            raise RuntimeError("Out of date font.")
+
+        self.map = self.json["charmap"]
         self.grid = self.json["gridsize"]
-        self.exceptionals = self.json["exceptionals"]
-        self.advance = self.json.get("advanceStandard",self.grid[0])
+        self.advancestd = self.json.get("advanceStandard",self.grid[0])
+        self.advances = {}
+        self.pilpng = PIL.Image.open(pngf,"r")
+        if self.pilpng.mode != "RGBA":
+            self.pilpng = self.pilpng.convert("RGBA")
+        for y,line in enumerate(self.map):
+            for x,chr in enumerate(line):
+                topleft = (x*self.grid[0],y*(self.grid[1]+self.headerPixels))
+                for i in range(self.grid[0]):
+                    self.advances[chr] = self.advancestd
+                    if self.pilpng.getpixel((topleft[0]+i,topleft[1]))[3] != 0:
+                        self.advances[chr] = i+2
+                        break
     def drawChr(self,chr,x,y,color,scale=1):
         foundX = 0
         foundY = 0
@@ -55,11 +72,9 @@ class Font:
                 foundY = _y
                 foundX = v.index(chr)
                 break
-        advance = self.advance
-        if chr in self.exceptionals:
-            advance = self.exceptionals[chr]
+        advance = self.advances[chr]
         chrx = foundX*self.grid[0]
-        chry = foundY*self.grid[1]
+        chry = foundY*(self.grid[1]+self.headerPixels)+1
         chrw = (advance-1)
         chrh = self.grid[1]
         rect = ray.Rectangle(chrx,chry,chrw,chrh)
@@ -68,6 +83,16 @@ class Font:
     def drawStr(self,str,x,y,color,scale=1):
         for chr in str:
             x += self.drawChr(chr,x,y,color,scale)
+    def drawStrOutline(self,str,x,y,color,scale=1):
+        self.drawStr(str,x-1,y-1,color,scale)
+        self.drawStr(str,x-1,y+1,color,scale)
+        self.drawStr(str,x+1,y-1,color,scale)
+        self.drawStr(str,x+1,y+1,color,scale)
+    def measureStr(self,str,scale=1):
+        len = 0
+        for chr in str:
+            len += self.advances[chr]
+        return len*scale
     def close(self):
         ray.unload_texture(self.png)
 

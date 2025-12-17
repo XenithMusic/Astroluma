@@ -59,8 +59,12 @@ class Scene(SuperNode):
         settings.screen_width = self.w
         settings.screen_height = self.h
 
+defaultFont = rayx.RayfontAFAbst()
+
 class Text(Node):
-    def __init__(self,x,y,text="meta.text.defaultText",size=12,color=ray.RAYWHITE,hAlign="left",vAlign="top",outlineColor=None):
+    def __init__(self,x,y,text="meta.text.defaultText",size=16,color=ray.RAYWHITE,hAlign="left",vAlign="top",outlineColor=None,font=None):
+        global defaultFont
+        if font == None: font = defaultFont
         super().__init__(x,y)
         self.text = text
         self.fontSize = size
@@ -69,13 +73,14 @@ class Text(Node):
         self.hAlignSet = hAlign
         self.vAlignSet = vAlign
         self.outlineColor = outlineColor
+        self.font = font
     def _render(self,assets,settings,sceneManager:SceneManager):
         if self.initialized == False: self.postRenderInit(assets,settings,sceneManager)
         if self.outlineColor:
-            rayx.draw_text_outline(assets.locale[settings.locale].getKey(self.text),self.x-self.hAlign,self.y-self.vAlign,self.fontSize,self.outlineColor)
-        ray.draw_text(assets.locale[settings.locale].getKey(self.text),self.x-self.hAlign,self.y-self.vAlign,self.fontSize,self.fontColor)
+            self.font.drawStrOutline(assets.locale[settings.locale].getKey(self.text),self.x-self.hAlign,self.y-self.vAlign,self.outlineColor,self.fontSize/16)
+        self.font.drawStr(assets.locale[settings.locale].getKey(self.text),self.x-self.hAlign,self.y-self.vAlign,self.fontColor,self.fontSize/16)
     def postRenderInit(self,assets,settings,sceneManager:SceneManager):
-        self.w = ray.measure_text(assets.locale[settings.locale].getKey(self.text),self.fontSize)
+        self.w = self.font.measureStr(assets.locale[settings.locale].getKey(self.text),self.fontSize/16)
         self.h = self.fontSize
         self.hAlign = 0
         self.vAlign = 0
@@ -91,7 +96,7 @@ class Text(Node):
         self.initialized = True
 
 class Button(CollectionNode):
-    def __init__(self,x,y,x2,y2,visualElement=Text,text="meta.defaultText",fontSize=20,buttonColor=ray.RAYWHITE,fontColor=ray.BLACK,
+    def __init__(self,x,y,x2,y2,visualElement=Text,text="meta.defaultText",fontSize=16,buttonColor=ray.RAYWHITE,fontColor=ray.BLACK,
                  hAlign="center",vAlign="center",textOffset=(0,0),borderColor=ray.RAYWHITE,outlineColor=None):
         self.w = x2-x
         self.h = y2-y

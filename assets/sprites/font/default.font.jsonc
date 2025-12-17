@@ -1,5 +1,5 @@
 {
-    "version":2,
+    "version":3,
     "gridsize":[16,16],
     "ascender":3, // how many pixels from the bottom does the average lowercase letter start
     "advanceStandard":8,
@@ -15,9 +15,5 @@
         "ÎÏÐÑÒÓÔÕÙÚÛÝÞþãà",
         "áâæçèéêëìíîïðñòó",
         "ôõùúûýÿŸŒœŠšŽž �"
-    ],
-    "exceptionals":{ // characters that have a different xadvance than the advanceStandard key.
-        " ":5,
-        "l":3
-    }
+    ]
 }

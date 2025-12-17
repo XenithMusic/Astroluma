@@ -24,6 +24,12 @@ ass = assets.Assets()
 mgr = scene.SceneManager(ass,cfg)
 
 """
+Init : Defaults
+"""
+
+nodes.defaultFont = ass.fonts["default"]
+
+"""
 Init : Modding
 """
 
@@ -43,7 +49,7 @@ class Menu(nodes.Scene):
 
         self.font = ass.fonts["default"]
 
-        self.title = nodes.Text(50,50,"'Astroluma",40,ray.WHITE,outlineColor=ray.BLACK)
+        self.title = nodes.Text(50,50,"'Astroluma",64,ray.WHITE,outlineColor=ray.BLACK)
         
         self.singlePlayer = nodes.Button(50,150,250,180,text="gui.menu.singleplayer",hAlign="center",textOffset=(0,0),buttonColor=ray.Color(255,255,255,50),fontColor=ray.WHITE,outlineColor=ray.BLACK,borderColor=None)
         self.singlePlayerAccent = nodes.FillRect(50,150,52,180,ray.WHITE)
@@ -61,11 +67,11 @@ class Menu(nodes.Scene):
         self.exitAccent = nodes.FillRect(50,246,52,276,ray.WHITE)
         self.exit.children += [self.exitAccent]
 
-        self.copyright = nodes.Text(self.w-5,self.h-5,text=f"'Astroluma ({const.VERSION})",size=10,hAlign="right",vAlign="bottom",outlineColor=ray.BLACK)
+        self.copyright = nodes.Text(self.w-5,self.h-5,text=f"'Astroluma ({const.CURRENT_VERSION['GAME']})",size=16,hAlign="right",vAlign="bottom",outlineColor=ray.BLACK)
 
-        self.modded = nodes.Text(5,self.h-5-20,text=f"gui.generic.unloaded",size=10,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
-        self.modct = nodes.Text(5,self.h-5-10,text=f"gui.generic.unloaded",size=10,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
-        self.rpct = nodes.Text(5,self.h-5,text=f"gui.generic.unloaded",size=10,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
+        self.modded = nodes.Text(5,self.h-5-32,text=f"gui.generic.unloaded",size=16,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
+        self.modct = nodes.Text(5,self.h-5-16,text=f"gui.generic.unloaded",size=16,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
+        self.rpct = nodes.Text(5,self.h-5,text=f"gui.generic.unloaded",size=16,hAlign="left",vAlign="bottom",outlineColor=ray.BLACK)
     def _render(self,assets,settings,sceneManager):
         global close
         super()._render(assets,settings,sceneManager)
@@ -79,7 +85,6 @@ class Menu(nodes.Scene):
         self.modct.text = f"'{MOD_COUNT} mods"
         self.rpct.text = f"'{RESOURCE_COUNT} resource packs"
         self.children = [self.title,self.singlePlayer,self.multiPlayer,self.settings,self.exit,self.copyright,self.modded,self.modct,self.rpct]
-        self.font.drawStr("Hello, World!",15,15,(0,0,0,255),scale=3)
         if self.exit.clicked():
             sceneManager.shutdown()
 
