@@ -1,0 +1,7 @@
+LCYAN = "\033[96m"
+LGRAY = "\033[37m"
+GRAY = "\033[90m"
+YELLOW = "\033[33m"
+RED = "\033[31m"
+ITALIC = "\033[3m"
+RESET = "\033[0m"

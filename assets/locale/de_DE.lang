@@ -1,26 +1,26 @@
-gui.menu.singleplayer Einzelspieler
-gui.menu.multiplayer Mehrspieler
-gui.menu.settings Einstellungen
-gui.menu.credits Gutschriften
-gui.menu.exit Beenden
-gui.menu.fire FEUER
-gui.settings.video Video
-gui.settings.audio Audio
-gui.settings.language Sprache
-gui.settings.volume.master Gesamtlautstärke
-gui.settings.volume.music Musiklautstärke
+gui.menu.singleplayer = Einzelspieler
+gui.menu.multiplayer = Mehrspieler
+gui.menu.settings = Einstellungen
+gui.menu.credits = Gutschriften
+gui.menu.exit = Beenden
+gui.menu.fire = FEUER
+gui.settings.video = Video
+gui.settings.audio = Audio
+gui.settings.language = Sprache
+gui.settings.volume.master = Gesamtlautstärke
+gui.settings.volume.music = Musiklautstärke
 
-gui.credits.libraries Bibliotheken
-gui.credits.developers Programmierer
-gui.credits.music Musik
-gui.credits.fonts Schriftarten
+gui.credits.libraries = Bibliotheken
+gui.credits.developers = Programmierer
+gui.credits.music = Musik
+gui.credits.fonts = Schriftarten
 
-gui.games.create Neu Spiel
-gui.games.species Artenauswahl
-gui.games.appearance Aussehen anpassen
-gui.games.finish Spiel Erstellen
-gui.games.generating Spiel Erstellen
+gui.games.create = Neu Spiel
+gui.games.species = Artenauswahl
+gui.games.appearance = Aussehen anpassen
+gui.games.finish Spiel = Erstellen
+gui.games.generating = Spiel Erstellen
 
-gui.generic.back Zurück
-gui.generic.next Nächste
-gui.generic.wait Bitte warten Sie
+gui.generic.back = Zurück
+gui.generic.next = Nächste
+gui.generic.wait = Bitte warten Sie

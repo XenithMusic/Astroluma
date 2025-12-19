@@ -1,4 +1,5 @@
 import os,jsonc,const
+import debug as d
 from typing import Any
 import pyray as ray
 import PIL.Image
@@ -12,6 +13,7 @@ Asset loaders
 class Locale:
     def __init__(self,sourceFile):
         self.keys = {}
+        self.name = sourceFile.split("/")[-1]
         with open(sourceFile,"r") as f:
             self.data = f.read().split("\n")
         for line in self.data:
@@ -37,7 +39,7 @@ class ShaderContent:
 class Font:
     def __init__(self,sourceFile):
         self.headerPixels = 1 # how many pixels that are not counted in the "gridsize", which is only for rendered size.
-        print(sourceFile)
+        d.debug(sourceFile,debugLevel=2)
         pngf = sourceFile
         jsonf = pngf.replace(".png",".jsonc")
         assert os.path.exists(pngf)
@@ -120,6 +122,10 @@ class Assets:
         self.locale: list[Locale] = loadCategory("locale",loadFunc=getLocales)
         self.shaders: list[ShaderContent] = loadCategory("shaders",loadFunc=getShaders)
         self.fonts: list[Font] = loadCategory("sprites/font",loadFunc=getFonts,getFunc=getFulls)
+        for i in self.locale["en_US"].keys:
+            for name,lang in self.locale.items():
+                if not i in lang.keys:
+                    d.warn(f"Missing key in language {name}: {i}")
     def close(self):
         for i in self.locale:
             i.close()

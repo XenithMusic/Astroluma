@@ -4,6 +4,7 @@ gui.menu.settings = Settings
 gui.menu.credits = Credits
 gui.menu.exit = Exit
 gui.menu.fire = FIRE
+gui.menu.saves.sub = %s%% complete     (%s)
 gui.settings.video = Video
 gui.settings.audio = Audio
 gui.settings.language = Language

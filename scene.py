@@ -1,4 +1,5 @@
 import pyray as ray
+import debug as d
 
 class SceneManager:
     def __init__(self,assets,settings):
@@ -7,15 +8,16 @@ class SceneManager:
         self.queued = []
         self.should_close = False
         self.close_exit_code = 0
-        self.callbacks = {"shutdown":lambda a,b,c : 0}
+        self.callbacks = {"shutdown":lambda a,b,c : d.warn("Default shutdown callback found while shutting down. No garbage collection is occurring!")}
         self.assets = assets
         self.settings = settings
+        self.shared = {}
     def declareScene(self,id,cls):
         self.scenes[id] = cls
     def activateScene(self,id,priority):
-        print(f" :: Enabling scene {id}.")
+        d.debug(f"Enabling scene {id} with priority {priority}.")
         self.renderStack[priority] = (id,self.scenes[id]())
-        print(f" :: Successfully enabled scene {id}!")
+        d.debug(f"Successfully enabled scene {id}!")
     def queueSceneChange(self,id,priority):
         self.queued.append([id,priority])
     def render(self):

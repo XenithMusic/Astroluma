@@ -9,3 +9,24 @@
 > This version is less feature complete, but is rapidly catching up, and is way neater.
 >
 > Sorry for the weirdness!
+
+Missing Legacy Features:
+-
+- Settings menu
+- Several settings
+- Background music
+- Sound system
+- Gameplay scene
+- Entity rendering
+- Block rendering
+
+Improvements from Legacy:
+-
+- Easier python raylib bindings
+- Node-based scene system
+- Stackable scenes
+- Clean shutdown is easier to deal with
+
+Planned Future Features:
+-
+- Actual Gameplay
