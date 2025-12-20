@@ -1,0 +1,4 @@
+lupa
+psutil
+raypy
+PIL

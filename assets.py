@@ -19,7 +19,7 @@ class Locale:
         for line in self.data:
             if not "=" in line: continue
             split = line.split("//")[0].split("=")
-            self.keys[split[0].rstrip()] = "=".join(split[1:])
+            self.keys[split[0].rstrip()] = "=".join(split[1:]).lstrip()
     def getKey(self,key,*format):
         if key.startswith("'"):
             text = key[1:]
@@ -107,6 +107,13 @@ def getShaders(list):
 def getFonts(list):
     return {x.split("/")[-1].replace(".font.png",""):Font(x) for x in list if x.endswith(".font.png")}
 
+def getScripts(list):
+    ret = {}
+    for x in list:
+        with open(x + ".lua","r") as f:
+            ret[x.split("/")[-1].replace(".lua","")] = f.read()
+    return ret
+
 """
 Asset API
 """
@@ -118,14 +125,18 @@ def getFulls(category,namespace="astroluma"):
 def loadCategory(category,namespace="astroluma",loadFunc=str,getFunc=getCategory) -> list[Any]:
     return loadFunc([f"{loadedNamespaces[namespace]}{category}/{x}" for x in getFunc(category,namespace)])
 class Assets:
-    def __init__(self):
+    def __init__(self,displaying=True):
+        self.scripts: list[str] = loadCategory("scripts",loadFunc=getScripts)
+
         self.locale: list[Locale] = loadCategory("locale",loadFunc=getLocales)
-        self.shaders: list[ShaderContent] = loadCategory("shaders",loadFunc=getShaders)
-        self.fonts: list[Font] = loadCategory("sprites/font",loadFunc=getFonts,getFunc=getFulls)
         for i in self.locale["en_US"].keys:
             for name,lang in self.locale.items():
                 if not i in lang.keys:
                     d.warn(f"Missing key in language {name}: {i}")
+        
+        self.shaders: list[ShaderContent] = loadCategory("shaders",loadFunc=getShaders)
+
+        if displaying == True: self.fonts: list[Font] = loadCategory("sprites/font",loadFunc=getFonts,getFunc=getFulls)
     def close(self):
         for i in self.locale:
             i.close()

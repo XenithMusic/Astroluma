@@ -1,5 +1,6 @@
 import pyray as ray
 import debug as d
+import registrations
 
 class SceneManager:
     def __init__(self,assets,settings):
@@ -13,6 +14,9 @@ class SceneManager:
         self.settings = settings
         self.shared = {}
     def declareScene(self,id,cls):
+        if id in registrations.menuOverrides:
+            cls = registrations.menuOverrides[id]
+            cls = registrations.menus[cls][1]
         self.scenes[id] = cls
     def activateScene(self,id,priority):
         d.debug(f"Enabling scene {id} with priority {priority}.")

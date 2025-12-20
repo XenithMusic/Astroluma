@@ -10,3 +10,6 @@ CURRENT_VERSION = {
 DEBUG = 2
 if DEBUG != 0:
     print(f"Debugging at level {DEBUG}.")
+
+SIZE_KB = 1024
+SIZE_MB = SIZE_KB*1024

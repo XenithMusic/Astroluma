@@ -2,6 +2,8 @@ import os,objects,jsonc
 
 if "data" not in os.listdir():
     os.mkdir("data")
+if "saves" not in os.listdir("data"):
+    os.mkdir("data/saves")
 
 class World:
     def __init__(self,path):
@@ -27,9 +29,11 @@ class Saves:
 
 class Settings:
     def __init__(self):
-        self.screen_width = 0
-        self.screen_height = 0
-        self.locale = "en_US"
+        self.dict = {
+            "screen_width":0,
+            "screen_height":0,
+            "locale":"en_US"
+        }
     @property
     def saves(self):
         return Saves("data/saves/")

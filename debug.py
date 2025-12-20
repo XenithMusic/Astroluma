@@ -17,14 +17,20 @@ def debug(msg,debugLevel=1):
     createMessage(f"{colors.GRAY}{colors.ITALIC} -- {' '*(debugLevel*4)} {msg}{colors.RESET}")
     return True
 
-def info(msg):
-    createMessage(f"{colors.LGRAY} :: {msg}{colors.RESET}")
+def info(msg,namespace=""):
+    lua = ""
+    if namespace != "": lua = f"(lua: {namespace})"
+    createMessage(f"{colors.LBLUE}{lua}{colors.LGRAY} :: {msg}{colors.RESET}")
 
-def warn(msg):
-    createMessage(f"{colors.YELLOW} ?? {msg}{colors.RESET}")
+def warn(msg,namespace=""):
+    lua = ""
+    if namespace != "": lua = f"(lua: {namespace})"
+    createMessage(f"{colors.LBLUE}{lua}{colors.YELLOW} ?? {msg}{colors.RESET}")
 
-def err(msg):
-    createMessage(f"{colors.RED} !! {msg}{colors.RESET}")
+def err(msg,namespace=""):
+    lua = ""
+    if namespace != "": lua = f"(lua: {namespace})"
+    createMessage(f"{colors.LBLUE}{lua}{colors.RED} !! {msg}{colors.RESET}")
 
 def fatal(msg,exitCode=1):
     createMessage(f"{colors.RED}{'*'*32}")

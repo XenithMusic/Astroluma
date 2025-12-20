@@ -10,12 +10,15 @@ class Node:
         self.children = children
     def render(self,assets,settings,sceneManager:SceneManager,parent=(0,0)):
         self.parent = parent
+        self._startRender(assets,settings,sceneManager,parent)
         self._render(assets,settings,sceneManager,parent)
         for i in self.children:
             i.parent = (parent[0]+self.x,parent[1]+self.y)
             i.render(assets,settings,sceneManager,(parent[0]+self.x,parent[1]+self.y))
         self._endRender(assets,settings,sceneManager,parent)
-    def _render(self,assets,settings,sceneManager:SceneManager):
+    def _startRender(self,assets,settings,sceneManager:SceneManager,parent):
+        pass
+    def _render(self,assets,settings,sceneManager:SceneManager,parent):
         raise NotImplementedError(f"Node._render not implemented in {self.__class__}.")
     def _endRender(self,assets,settings,sceneManager:SceneManager,parent):
         pass
@@ -58,8 +61,31 @@ class Scene(SuperNode):
     def _render(self,assets,settings,sceneManager:SceneManager,parent):
         self.w = ray.get_screen_width()
         self.h = ray.get_screen_height()
-        settings.screen_width = self.w
-        settings.screen_height = self.h
+        settings.dict["screen_width"] = self.w
+        settings.dict["screen_height"] = self.h
+
+class LuaScene(Scene):
+    def __init__(self):
+        super().__init__()
+        self.shared = {}
+        self.luafn["init"](self.shared)
+    def __prerender(self,px,py): # for lua
+        raise NotImplementedError("__prerender")
+    def __render(self,px,py): # for lua
+        raise NotImplementedError("__render")
+    def __postrender(self,px,py): # for lua
+        raise NotImplementedError("__postrender")
+    def _startRender(self, assets, settings, sceneManager,parent):
+        self.luafn["prerender"](self.shared,parent[0],parent[1])
+    def _render(self,assets,settings,sceneManager:SceneManager,parent):
+        self.shared["w"] = ray.get_screen_width()
+        self.shared["h"] = ray.get_screen_height()
+        settings.dict["screen_width"] = self.w
+        settings.dict["screen_height"] = self.h
+        self.luafn["render"](self.shared,parent[0],parent[1])
+    def _endRender(self, assets, settings, sceneManager,parent):
+        self.luafn["postrender"](self.shared,parent[0],parent[1])
+        self.children = self.luafn["children"](self.shared,parent[0],parent[1])
 
 class Holder(CollectionNode):
     def __init__(self,children,x,y,w,h):
@@ -92,11 +118,11 @@ class Text(Node):
     def _render(self,assets,settings,sceneManager:SceneManager,parent):
         if self.initialized == False: self.postRenderInit(assets,settings,sceneManager)
         if self.outlineColor:
-            self.font.drawStrOutline(assets.locale[settings.locale].getKey(self.text,*self.text_replacements),self.x-self.hAlign+parent[0],self.y-self.vAlign+parent[1],self.outlineColor,self.fontSize/16)
-        self.font.drawStr(assets.locale[settings.locale].getKey(self.text,*self.text_replacements),self.x-self.hAlign+parent[0],self.y-self.vAlign+parent[1],self.fontColor,self.fontSize/16)
+            self.font.drawStrOutline(assets.locale[settings.dict["locale"]].getKey(self.text,*self.text_replacements),self.x-self.hAlign+parent[0],self.y-self.vAlign+parent[1],self.outlineColor,self.fontSize/16)
+        self.font.drawStr(assets.locale[settings.dict["locale"]].getKey(self.text,*self.text_replacements),self.x-self.hAlign+parent[0],self.y-self.vAlign+parent[1],self.fontColor,self.fontSize/16)
     def postRenderInit(self,assets,settings,sceneManager:SceneManager):
         # print(self.text_replacements)
-        self.w = self.font.measureStr(assets.locale[settings.locale].getKey(self.text,*self.text_replacements),self.fontSize/16)
+        self.w = self.font.measureStr(assets.locale[settings.dict["locale"]].getKey(self.text,*self.text_replacements),self.fontSize/16)
         self.h = self.fontSize
         self.hAlign = 0
         self.vAlign = 0

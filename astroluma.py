@@ -7,6 +7,7 @@ import assets
 import const
 import time
 import math
+import mods
 
 """
 Init : Raylib
@@ -38,8 +39,15 @@ Init : Modding
 """
 
 d.debug("Init : Modding")
+
+mods.init(ass,cfg)
+mods = mods.discover_mods()
+
+for i in mods:
+    print(i.run_script("init",["init"]))
+
 MOD_BRAND = "Vanilla"
-MOD_COUNT = 0
+MOD_COUNT = len(mods)
 RESOURCE_COUNT = 0
 
 """
